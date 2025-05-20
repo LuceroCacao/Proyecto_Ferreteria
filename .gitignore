@@ -1,0 +1,15 @@
+# Virtualenv
+venv/
+__pycache__/
+*.pyc
+
+# Base de datos sqlite (si la tienes local)
+db.sqlite3
+
+# Archivos de sistema / IDE
+*.log
+*.pot
+*.py[cod]
+*.swp
+.DS_Store
+.vscode/
