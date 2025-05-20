@@ -1,3 +1,5 @@
+# inventario/views.py
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.db.models import Sum, F
@@ -23,15 +25,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ctx['low_stock'] = Producto.objects.filter(stock__lt=10).count()
 
         # 3) Usuarios en el sistema
-        User = get_user_model()
-        ctx['user_count'] = User.objects.count()
+        ctx['user_count'] = get_user_model().objects.count()
 
         # 4) Datos para el gráfico: etiquetas y valores
         labels, data = [], []
-        qs = CategoriaProducto.objects.annotate(
-            total_stock=Sum('producto__stock')
-        )
-        for cat in qs:
+        for cat in CategoriaProducto.objects.annotate(total_stock=Sum('producto__stock')):
             labels.append(cat.nombre)
             data.append(cat.total_stock or 0)
         ctx['category_labels'] = labels
@@ -47,17 +45,20 @@ class ProductosListView(LoginRequiredMixin, ListView):
     model = Producto
     template_name = 'inventario/productos_list.html'
     context_object_name = 'productos'
+    paginate_by = 20  # quita o ajusta según prefieras
 
 
 class ClientesListView(LoginRequiredMixin, ListView):
     model = Cliente
     template_name = 'inventario/clientes_list.html'
     context_object_name = 'clientes'
+    paginate_by = 20
+
 
 class LogoutGetView(LogoutView):
     """
-    Cuando reciba un GET, lo trata internamente como POST
-    para que LogoutView no devuelva 405.
+    Permite hacer logout vía GET (redirigiendo internamente al POST).
+    Así evitamos el 405 cuando el usuario hace click en “Salir”.
     """
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)

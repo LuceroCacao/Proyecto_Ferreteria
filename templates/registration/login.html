@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,28 +6,96 @@
   <title>Iniciar sesión – ERP Ferretería</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body, html { height: 100%; margin: 0; }
-    .bg-brand {
-      background: #0d6efd; /* azul primario */
-      color: white;
+    :root {
+      --clr-start: #1f2937;    /* azul oscuro */
+      --clr-end:   #111827;    /* casi negro */
+      --clr-bg:    #f8fafc;    /* gris muy claro */
+      --clr-border:#e2e8f0;    /* gris para bordes */
     }
+    html, body { height: 100%; margin: 0; }
+    .h-100 { height: 100%!important; }
+    .g-0 { --bs-gutter-x: 0; --bs-gutter-y: 0; }
+    .p-0 { padding: 0!important; }
+
+    /* PANEL IZQUIERDO */
+    .bg-brand {
+      background: linear-gradient(135deg, var(--clr-start), var(--clr-end));
+      color: #fff;
+    }
+    .bg-brand .brand-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 2rem;
+    }
+    .brand-title {
+      font-size: 3rem;
+      font-weight: 800;
+      /* degradado sutil en el texto para que brille */
+      background: linear-gradient(45deg, #fff, #ddd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-lead {
+      font-size: 1.1rem;
+      opacity: .85;
+      margin-top: .5rem;
+    }
+
+    /* PANEL DERECHO */
+    .bg-login {
+      background: var(--clr-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-login {
+      border: 1px solid var(--clr-border);
+      border-radius: .75rem;
+      max-width: 400px;
+      width: 100%;
+    }
+    .card-login .form-control {
+      border-radius: .5rem;
+      border-color: var(--clr-border);
+    }
+    .card-login .form-control:focus {
+      box-shadow: 0 0 0 .2rem rgba(31,41,55,.25);
+      border-color: var(--clr-end);
+    }
+    .btn-login {
+      background: linear-gradient(135deg, var(--clr-start), var(--clr-end));
+      border: none;
+      border-radius: .5rem;
+      padding: .75rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, var(--clr-end), var(--clr-start));
+    }
+    /* Quitar cualquier ::before en el h3 si existiera */
+    .card-login h3::before { content: none!important; }
   </style>
 </head>
 <body>
-  <div class="container-fluid h-100">
-    <div class="row h-100">
-      <!-- Lado izquierdo: marca / imagen -->
-      <div class="col-md-6 d-none d-md-flex bg-brand align-items-center justify-content-center">
-        <div class="text-center px-4">
-          <h1 class="display-4">ERP Ferretería</h1>
-          <p class="lead">Gestión integral de inventario y contabilidad</p>
+  <div class="container-fluid h-100 p-0">
+    <div class="row h-100 g-0">
+      <!-- IZQUIERDO -->
+      <div class="col-md-6 d-none d-md-block bg-brand">
+        <div class="brand-inner">
+          <h1 class="brand-title">ERP Ferretería</h1>
+          <p class="brand-lead">Gestión integral de inventario y contabilidad</p>
         </div>
       </div>
-      <!-- Lado derecho: formulario de login -->
-      <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
-        <div class="card shadow-sm p-4" style="max-width: 380px; width: 100%;">
+
+      <!-- DERECHO -->
+      <div class="col-12 col-md-6 bg-login">
+        <div class="card card-login shadow-sm p-4">
           <h3 class="mb-4 text-center">Iniciar sesión</h3>
-          <form method="post">
+          <form method="post" novalidate>
             {% csrf_token %}
             <div class="mb-3">
               <label for="id_username" class="form-label">Usuario</label>
@@ -38,9 +107,9 @@
               <input type="password" name="password"
                      class="form-control" id="id_password" placeholder="Tu contraseña">
             </div>
-            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            <button type="submit" class="btn btn-login w-100">Entrar</button>
             {% if form.errors %}
-              <div class="alert alert-danger mt-3 text-center">
+              <div class="alert alert-danger mt-3 text-center mb-0">
                 Usuario o contraseña incorrectos.
               </div>
             {% endif %}
