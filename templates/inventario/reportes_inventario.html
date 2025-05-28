@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reportes de Inventario</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .card-report {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .card-report:hover {
+      transform: translateY(-5px);
+    }
+    .card-icon {
+      font-size: 2rem;
+      margin-right: 0.75rem;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="report-header mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">📊 Reportes de Inventario</h2>
+    <span class="text-muted">Fecha actual: {{ fecha_actual }}</span>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'inventario:dashboard' %}" class="btn btn-dark shadow-sm">← Salir</a>
+    <a href="{% url 'inventario:reporte_ventas_pdf' %}" class="btn btn-dark shadow-sm" target="_blank">🧾 Exportar PDF</a>
+  </div>
+</div>
+
+<!--Filtros-->
+<form method="get" class="row gy-2 gx-3 align-items-center mb-4">
+  <div class="col-auto">
+    <label for="categoria" class="form-label mb-0 fw-bold">Categoría:</label>
+    <select name="categoria" id="categoria" class="form-select">
+      <option value="">-- Todas --</option>
+      {% for cat in categorias_disponibles %}
+      <option value="{{ cat.id_categoria }}" {% if categoria_filtro == cat.id_categoria|stringformat:"s" %}selected{% endif %}>
+        {{ cat.nombre }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <div class="form-check mt-4">
+      <input class="form-check-input" type="checkbox" name="stock_bajo" id="stock_bajo" value="1"
+        {% if stock_bajo_filtro %}checked{% endif %}>
+      <label class="form-check-label fw-bold" for="stock_bajo">Solo stock bajo</label>
+    </div>
+  </div>
+  <div class="col-auto mt-4">
+    <button type="submit" class="btn btn-dark">Filtrar</button>
+    <a href="{% url 'inventario:reportes_inventario' %}" class="btn btn-secondary">Limpiar</a>
+  </div>
+</form>
+
+<!-- Tarjetas -->
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card card-report p-4">
+      <div class="d-flex align-items-center">
+        <div class="text-primary card-icon">📦</div>
+        <div>
+          <h6 class="mb-1">Total de productos</h6>
+          <h4 class="fw-bold">{{ total_productos }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-report p-4">
+      <div class="d-flex align-items-center">
+        <div class="text-success card-icon">✅</div>
+        <div>
+          <h6 class="mb-1">Productos con stock suficiente</h6>
+          <h4 class="fw-bold">{{ productos_suficientes }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-report p-4">
+      <div class="d-flex align-items-center">
+        <div class="text-danger card-icon">⚠️</div>
+        <div>
+          <h6 class="mb-1">Productos con stock bajo</h6>
+          <h4 class="fw-bold">{{ productos_bajo_stock }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gráfico y tabla -->
+<h4 class="section-title mt-5">📈 Distribución por Categoría y Detalle</h4>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card card-report p-4 h-100">
+      <canvas id="graficoCategorias" style="max-height: 400px;"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-report p-3 h-100" style="max-height: 400px; overflow-y: auto;">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio Compra</th>
+              <th>Precio Venta</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in productos %}
+            <tr>
+              <td>{{ p.id_producto }}</td>
+              <td>{{ p.nombre }}</td>
+              <td>{{ p.categoria.nombre }}</td>
+              <td>Q{{ p.precio_compra|floatformat:"2" }}</td>
+              <td>Q{{ p.precio_venta|floatformat:"2" }}</td>
+              <td>{{ p.stock }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No hay productos registrados.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script del gráfico -->
+<script>
+  const dataCategorias = {
+    labels: [{% for cat in categorias %}'{{ cat.categoria__nombre }}',{% endfor %}],
+    datasets: [{
+      label: 'Productos por categoría',
+      data: [{% for cat in categorias %}{{ cat.total }},{% endfor %}],
+      backgroundColor: ['#4CAF50', '#FF9800', '#2196F3', '#F44336', '#9C27B0', '#00BCD4', '#795548'],
+      hoverOffset: 4
+    }]
+  };
+
+  const configCategorias = {
+    type: 'pie',
+    data: dataCategorias,
+  };
+
+  new Chart(document.getElementById('graficoCategorias'), configCategorias);
+</script>
+
+</body>
+</html>
+
+

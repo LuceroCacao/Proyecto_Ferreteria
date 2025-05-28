@@ -36,7 +36,7 @@
   <!-- SIDEBAR -->
   <nav class="sidebar d-flex flex-column">
     <h4 class="px-3 py-4 mb-0">ERP Ferretería</h4>
-    <a href="{% url 'inventario:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+    <a href="{% url 'inventario:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Inventario</a>
     <a href="{% url 'inventario:productos_list' %}" class="{% if request.resolver_match.url_name == 'productos_list' %}active{% endif %}">Productos</a>
     <a href="{% url 'inventario:clientes_list' %}" class="{% if request.resolver_match.url_name == 'clientes_list' %}active{% endif %}">Clientes</a>
     <form action="{% url 'logout' %}" method="post" class="mt-auto">

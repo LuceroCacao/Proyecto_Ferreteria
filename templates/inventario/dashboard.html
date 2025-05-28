@@ -134,14 +134,19 @@
           </div>
         </div>
 
-        <!-- Botón “Agregar” -->
-        <div class="d-flex justify-content-end mb-4">
-          <a href="{% url 'inventario:producto_create' %}"
-             class="btn btn-dark"
-             style="background: linear-gradient(135deg, #111827, #1f2937);">
-            + Agregar Producto
-          </a>
-        </div>
+    <!-- Botones de acción -->
+    <div class="d-flex justify-content-end gap-2 mb-4">
+      <a href="{% url 'inventario:producto_create' %}"
+        class="btn btn-dark"
+        style="background: linear-gradient(135deg, #111827, #1f2937);">
+        + Agregar Producto
+      </a>
+      <a href="{% url 'inventario:reportes_inventario' %}"
+        class="btn btn-dark"
+        style="background: linear-gradient(135deg, #111827, #1f2937);">
+        📊 Ver Reportes
+      </a>
+    </div>
 
         <!-- Gráfico -->
         <div class="card p-4">

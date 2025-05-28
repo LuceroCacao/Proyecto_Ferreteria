@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #333;
+      margin: 40px;
+    }
+    .title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+    .timestamp {
+      text-align: right;
+      font-size: 12px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #2c3e50;
+      color: #fff;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .no-data {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+    }
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">📋 Reporte de Ventas</div>
+  <div class="timestamp">Fecha de generación: {{ fecha_actual }}</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if ventas %}
+        {% for v in ventas %}
+          <tr>
+            <td>{{ v.id_venta }}</td>
+            <td>{{ v.cliente.nombre }}</td>
+            <td>{{ v.fecha|date:"d/m/Y H:i" }}</td>
+            <td>Q{{ v.total|floatformat:2 }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="4" class="no-data">No se encontraron ventas registradas.</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <div class="footer">Sistema ERP Ferretería &mdash; Generado automáticamente</div>
+</body>
+</html>

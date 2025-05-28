@@ -1,9 +1,11 @@
 from django.urls import path
+
 from .views import (
     DashboardView,
     ProductosListView, ProductoCreateView, ProductoUpdateView, ProductoDeleteView,
     ClientesListView, ClienteCreateView, ClienteUpdateView, ClienteDeleteView,
-    LogoutGetView,
+    ReporteInventarioView, ReporteVentasView, ExportarVentasPDFView,
+    LogoutGetView, ReporteVentasPDFView,
 )
 
 app_name = 'inventario'
@@ -23,9 +25,16 @@ urlpatterns = [
     path('clientes/nuevo/', ClienteCreateView.as_view(), name='cliente_create'),
     path('clientes/<int:pk>/editar/', ClienteUpdateView.as_view(), name='cliente_update'),
     path('clientes/<int:pk>/borrar/', ClienteDeleteView.as_view(), name='cliente_delete'),
-        
 
     # Logout
     path('logout/', LogoutGetView.as_view(next_page='login'), name='logout'),
+
+    # Reportes
+    path('reportes/', ReporteInventarioView.as_view(), name='reportes_inventario'),
+    path('reportes/ventas/', ReporteVentasView.as_view(), name='reportes_ventas'),
+    path('reportes/ventas/pdf/', ExportarVentasPDFView.as_view(), name='reporte_ventas_pdf'),
+    path('reportes/ventas/pdf/', ReporteVentasPDFView.as_view(), name='reporte_ventas_pdf'),
+
+    
 ]
 
