@@ -3,30 +3,48 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Clientes — ERP Ferretería</title>
+  <title>Clientes – ERP Ferretería</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-    body { overflow-x: hidden; }
+    body {
+      display: flex;
+      margin: 0;
+      background: #f8fafc;
+    }
     .sidebar {
-      width: 220px; background: #1f2937; color: #fff; min-height: 100vh;
+      width: 220px;
+      background: #1f2937;
+      color: #fff;
+      min-height: 100vh;
+      padding: 2rem 1rem;
     }
     .sidebar a, .sidebar form button {
-      color: #cbd5e1; padding: .75rem 1rem; display: block; text-decoration: none; border:none; background:none; text-align:left; width:100%;
+      color: #cbd5e1;
+      display: block;
+      padding: .5rem 1rem;
+      text-decoration: none;
+      background: none;
+      border: none;
+      text-align: left;
+      width: 100%;
     }
-    .sidebar a.active, .sidebar a:hover, .sidebar form button:hover {
-      background: #111827; color: #fff;
+    .sidebar a.active,
+    .sidebar a:hover,
+    .sidebar form button:hover {
+      background: #111827;
+      color: #fff;
     }
     .main-content {
-      padding: 2rem; margin-left: 220px; background: #f8fafc; min-height: 100vh;
+      flex-grow: 1;
+      padding: 2rem;
     }
-    table { background: #fff; }
   </style>
 </head>
-<body class="d-flex">
+<body>
+
   <!-- SIDEBAR -->
-  <nav class="sidebar d-flex flex-column">
-    <h4 class="px-3 py-4 mb-0">ERP Ferretería</h4>
+  <nav class="sidebar">
+    <h5 class="mb-4">ERP Ferretería</h5>
     <a href="{% url 'inventario:dashboard' %}">Dashboard</a>
     <a href="{% url 'inventario:productos_list' %}">Productos</a>
     <a href="{% url 'inventario:clientes_list' %}" class="active">Clientes</a>
@@ -38,34 +56,42 @@
 
   <!-- MAIN CONTENT -->
   <div class="main-content">
-    <h2 class="mb-4">Clientes</h2>
-
-    <div class="table-responsive">
-      <table class="table table-striped table-hover">
-        <thead class="table-light">
-          <tr>
-            <th>Nombre</th>
-            <th>NIT</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for cliente in clientes %}
-            <tr>
-              <td>{{ cliente.nombre }}</td>
-              <td>{{ cliente.nit }}</td>
-              <td>{{ cliente.telefono }}</td>
-              <td>{{ cliente.direccion }}</td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">No hay clientes registrados.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Clientes</h2>
+      <a href="{% url 'inventario:cliente_create' %}" class="btn text-white" style="background-color: #1f2937;">+ Agregar Cliente</a>
     </div>
+
+    <table class="table table-striped table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cliente in clientes %}
+        <tr>
+          <td>{{ cliente.id_cliente }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.correo }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>
+            <a href="{% url 'inventario:cliente_update' cliente.id_cliente %}" class="btn btn-outline-secondary btn-sm">Editar</a>
+            <a href="{% url 'inventario:cliente_delete' cliente.pk %}" class="btn btn-outline-danger btn-sm">Borrar</a>
+          </td>          
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No hay clientes registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+
 </body>
 </html>
+
